@@ -73,10 +73,48 @@ const navigator = createStackNavigator( // used to show different screens to our
 - state can be passed as a prop too.
 - each copy of component with state has own copy of state.
 - remember that `renderItem` prop gets called for every item inside of the `FlatList`
+- if we do string interpolation, we do have to use string interpolation inside curly braces. For example:
+```text
+ <Button title={`Increase ${color}`} />
+```
 
+**General rule for sharing state among components**
+- Create state variables in the most parent that needs to either 1. read value 2. change value.
+- Pass the state down to children. How do they change the values? How do they read it? You can pass it as a prop to child to help the child to read. If the children needs to change the value in the aprent, you can pass a callback function. The callback is called in the child which changes state in the parent.
 
+![callbacks](notes_images/chapter_6/callbacks.png)
 
+- if we have multiple pieces of state that are closely related,  and known ways we are changing state, great candidate to manage state by a reducer. IF you have closely related state, and know how you're changing each of them, use a reducer.
+- What is a **reducer**? Fancy name. Function taht has two arguments, first is a object with **all** state, argument 2 is object that describes that update that we want to make. Function that manages changes to an object, that's what a reducer is.
+- first object might look like `{red:0, green:0, blue:0}` and second might look like `{colorToChange: 'red', amount: 15}`. Similar to what we have here... which makes us think we should make a reducer:
 
+```text
+  const setColor = (color, change) => {
+    switch (color) {
+      case 'red':
+        red + change > 255 || red + change < 0
+          ? null
+          : setRed(red + change);
+        return;
+      case 'green':
+        green + change > 255 || green + change < 0
+          ? null
+          : setGreen(green + change);
+        return;
+      case 'blue':
+        blue + change > 255 || blue + change < 0
+          ? null
+          : setBlue(blue + change);
+        return;
+      default:
+        return;
+    }
+  };
+``` 
+- arugment 2 for a reducer is similar to the above setColor function inside our component.
+- inside reducer, we look at argument 2, and make some decision on how to change argument 1. 
+- never change argument 1 directly in a reducer.
+- reducer returns new state object.
 
 
 
