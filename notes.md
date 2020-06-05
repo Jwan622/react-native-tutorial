@@ -49,8 +49,30 @@ const navigator = createStackNavigator( // used to show different screens to our
 
 ## Chapter 5
 - `state` systems tracks piece of data that chagnes over time in our application, anytime data changes, content changes in our device. similar to props (commounicating parent to child)
--  
+- for state, if you update it, the screen will rerender. The variable has to be state for it to render. React-native does not watch non-state variables and change the screen. 
+- need to use `useState` hook. using this hook, react will watch the data.
+- this is how to set up state:
+  `const [counter, setCounter] = useState(0);`
+- the above sets a default state of 0. sets `coutner` to 0. the square brakcet is array destructuring in es6.
+- when doing it this way, we don't want to modify counter variable directly like `counter++`. use the `setCounter` function that is returned from `useState`. Should look something like this:
 
+```text
+  const [counter, setCounter] = useState(0);
+
+  return <View>
+    <Button title="Increase" onPress={() => {
+      setCounter(counter + 1);
+    }}/>
+    <Button title="Decrease" onPress={() => {
+      setCounter(counter - 1);
+    }}/>
+```
+- `setCounter` is used to update state variable. react does not detect if you manually make changes to state variable. when the screen rerenders, react-native knows that the component was rendered once so the useState doesn't reinitialize counter back to 0.
+- we never modify state variable directly. never on the left hand side of equal sign.
+- wyen a component is re-rendered, all children get re-rendered too. 
+- state can be passed as a prop too.
+- each copy of component with state has own copy of state.
+- remember that `renderItem` prop gets called for every item inside of the `FlatList`
 
 
 
