@@ -7,6 +7,9 @@ import ImageScreen from "./src/screens/ImageScreen"
 import CounterScreen from "./src/screens/CounterScreen"
 import ColorScreen from "./src/screens/ColorScreen"
 import SquareScreen from "./src/screens/SquareScreen"
+import TextScreen from "./src/screens/TextScreen"
+import PasswordScreen from "./src/screens/PasswordScreen"
+import BoxScreen from "./src/screens/BoxScreen"
 
 const navigator = createStackNavigator( // used to show different screens to our user. that's navigation, appear different screens of content to our user.
   {
@@ -17,6 +20,9 @@ const navigator = createStackNavigator( // used to show different screens to our
     Counter: CounterScreen,
     Color: ColorScreen,
     Square: SquareScreen,
+    Text: TextScreen,
+    Password: PasswordScreen,
+    Box: BoxScreen,
   },
   {
     initialRouteName: 'Home',

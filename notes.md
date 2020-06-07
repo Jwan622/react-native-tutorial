@@ -115,9 +115,64 @@ const navigator = createStackNavigator( // used to show different screens to our
 - inside reducer, we look at argument 2, and make some decision on how to change argument 1. 
 - never change argument 1 directly in a reducer.
 - reducer returns new state object.
+- `hooks` add in some additional functionality to a functional component.
+- this is how to initialize state using reducers. the `dispatch` is what calls the reducer function. Whenever we want to change state, we call `dispatch` with an action object. When you call dispatch, react-native calls the reducer passed to `useReducer`. dispatch, calls reducer, reducer returns state which is one of the two things returned from useReducer, and when reducer returns value react rerenders component. :
+
+```text
+  const [state, dispatch] = useReducer(reducer, {red: 0, green: 0, blue: 0})
+```
+and reducer function looks like this:
+- to change state in reducer, do not make change to state object directly. return a new state object by copying all of state over to a new object/dictionary.:
+
+```text
+const reducer = (state, action) => { //how to change state object is what the action is, the 2nd argument
+  // state is an object with red:, green:, blue:
+  // action is something like how to change state. we define the properties, something like {colorToChange: 'red', amount: 15 }
+
+  switch(action.colorToChange) {
+    case 'red':
+      return { ...state, red: state.red + action.amount }
+    case 'green':
+    case 'blue':
+    default:
+  }
+
+};
+```
+- in the syntax above, the red overwrites the red in the `...state` portion so the red on the right takes over. Remember, in a reducer we never want to change the state argument #1 directly.
+- need to return something from reducer to use as state.
+- the 2nd argument, action, in the reducer usually has `type` and `payload`, those are the conventions.
+- We spread in the reducer like this:
+
+```text
+ return { ...state, count: state.count + action.payload };
+```
+why? we take all different value sout of state and put it in new object. So why spread? We do it to future proof our reducer if we add new key/value pairs. 
+
+__Handling Text INputs__
+- weird thing with handling text inputs. zero styling by default, so nothing to indicate taht it's visible on screen.
+- might want to use props to prevent capitalziation and correction. `autoCapitalize="none"` `autoCorrect={false}`
+- how do we get state of input into parent? Well we never want to reach from parent to child and get state. Parent should not know of child state. so we use a callback to talk to parent from child that is passed from parent. using `onChangeText`, the callback is called every time user types in input. We cna use this callback to update state in parent, when state changes, the parent rerenders and the child rerenders too. `onChangeText` is called with new value that user types in input.
+- remember everytime we update state variable, component rerenders.
 
 
+## Chatper 7
+Styling
 
+![styling](notes_images/chapter_7/layouts.png)
+
+3 systems:
+1. we use box object from web development when we position single element by itself.
+2. flexbox is also from web. used to position children within parent.
+3. position positions single child inside parent. used to override box or flexbox. 
+- box object model first:
+    - focuses on one element
+    - refers to position around piece of content. 
+    
+    ![box_model](notes_images/chapter_7/box_model.png)
+
+you can use properties to adjust width of different layers. margin, borderwidth, padding are what we can adjust.you can add to top, bottom, left and right. there are actually properties like `margin` for all sides, `marginVertical` for top and bottom, and `marginHorizontal` for left and right.
+- flex box model. how siblings are algiend in commmon parent.
 
 
 
@@ -141,3 +196,6 @@ const navigator = createStackNavigator( // used to show different screens to our
 - View - used to wrap everything in a return statement in a component. return one single root element.
 - Image - used to display images.
     - props: source
+- TextInput - for input of text
+    - props: autocorrect, autoCApitalize, value, onChangeText
+    
