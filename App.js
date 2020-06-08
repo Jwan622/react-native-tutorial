@@ -10,6 +10,7 @@ import SquareScreen from "./src/screens/SquareScreen"
 import TextScreen from "./src/screens/TextScreen"
 import PasswordScreen from "./src/screens/PasswordScreen"
 import BoxScreen from "./src/screens/BoxScreen"
+import BoxScreenExercise from "./src/screens/BoxScreenExercise"
 
 const navigator = createStackNavigator( // used to show different screens to our user. that's navigation, appear different screens of content to our user.
   {
@@ -23,6 +24,7 @@ const navigator = createStackNavigator( // used to show different screens to our
     Text: TextScreen,
     Password: PasswordScreen,
     Box: BoxScreen,
+    Box2: BoxScreenExercise,
   },
   {
     initialRouteName: 'Home',

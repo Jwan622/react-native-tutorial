@@ -174,9 +174,88 @@ Styling
 you can use properties to adjust width of different layers. margin, borderwidth, padding are what we can adjust.you can add to top, bottom, left and right. there are actually properties like `margin` for all sides, `marginVertical` for top and bottom, and `marginHorizontal` for left and right.
 - flex box model. how siblings are algiend in commmon parent.
 
+Some flex box properties:
+- using flexbox, you can put `alignItems: 'flex-start'` to parent element. affects children in horizonttal direction. default is 'stretch' for `align-items` which means it will stretch and take up as much horizontal space as it possibly can. `flex-start` makes children move to the left as it possibly can but still keep room for the text.
+- `flexDirection` is another flex box property. that determines the primary adn secondary axis. If you put row, the children are in a single row. It affects `alignItems` too. if you use `flexDirection: row`, `alignItems` will affect the children's placement in the row. the default of `alignItems` is stretch so teh children will now stretch vertically to fill up the height. `flex-end` for alignItems will now move the children to the very bottom.
+- `justfiyContent` is another flex box property. affects how children are laid out vertically, opposite of `alignItems`. If we have flexDirection of column on tthe parent, justifyContent will work veritcally which is the opposite of alignItems. By default, justifyContent affects teh children vertically. the property lays out the children along the primary axis or whatever `flexDirection` is set to. That's the best way to think about `justifyContent`.
+
+![flexbox](notes_images/chapter_7/flexbox.png)
+- in the abovewe can see that `flexDirection` is still column, and the `justifyContent` is set to `flex-start` which pushes up the children to the top. `alignItems` is still set to `stretch` which is why tthey take up the whole row.
+
+So this with `row` for flexDirection:
+```text
+  viewStyle: {
+    borderWidth: 3,
+    borderColor: 'black',
+	height: 200,
+	flexDirection: 'row',
+	justifyContent: 'space-around',
+  },
+```
+makes the app look like this:
+
+![row-space-around](notes_images/chapter_7/row-space-around.png)
+
+- they are aligned in a row, or horizontally, and there's space aroiund each item in the image above.
+- remember that `alignItems` is `stretch` by default so thatt's why thtey take up the whole column in thet image above.
+
+Here are the properties we can change:
+
+![properties](notes_images/chapter_7/properties.png)
+- the `flex` property of a child changes how much space the child takes up within the parent. flex: 1 makes it so that teh child takes up as much space as it possibly can. 
+- `flex` operates in the same direction as `flexDirection` which by default is column,. So `flex` will cause child to expand vertically.
+- Assume `flexDirection` is defautl column. You can have flex values other than 1 and taht will proportion available space to children.
+
+![flex-children](notes_images/chapter_7/flex-children.png)
+
+- on child, `align-self` overrides `alignItems` on the parent.
+
+![align-self](notes_images/chapter_7/align-self.png)
+
+- I think this is what you'll need for your client:
+
+```text
+  viewStyle: {
+    borderWidth: 3,
+    borderColor: 'black',
+	height: 50,
+    flexDirection: 'row',
+	justifyContent: 'space-around'
+  },
+  textOneStyle: {
+    borderWidth: 3,
+    borderColor: 'red',
+  },
+  textTwoStyle: {
+    borderWidth: 3,
+    borderColor: 'red',
+  },
+  textThreeStyle: {
+    borderWidth: 3,
+    borderColor: 'red',
+  },
+```
+- it looks like a single row with three items with space around each item. `space-around` is similar to `space-between` except `space-around` has space round the sides.
+
+Position:
+- `absolute` makes a child completely ignored by its siblings when react lays out screen. so an element could be on top of other children. Its siblings will render without acknoledging the child with the `position: absolute`. It still obeys some flexbox properties on parent like `alignItems: flex-end`. but it will ignore `alignItems: stretch`.
+- `top`, `bottom`, `right`, `left` add spacing to their named direction and are performed after everything else is placed on the screen. So it moves an element, but it does not move sibling elements. So if you move an element down by 10 using `top:10`, it could lay on top of the child below it. It's kind of like `position: absolute` in that sense.
 
 
+Fill up screen:
+- to fill up entire parent, use `position: absolute` so it ignored all other elements and  set `top`, `bottom`, `left`, `right` to 0. react-native shortcut for these 5 are `...StyleSheet.absoluteFillObject` in the styles section which spreads those 5 properties into the styles section. setting top, left, right, bottom to 0 means no space between the element and the outer borders. 0 distance from element to top, right, left, bottom of parent container, that's how we get child to expand to size of parent.
 
+
+## Chapter 8
+- use expo cli, gives you more. react-native-cli did not give enough stuff out of box.
+- generate new proejct using expo cli. 
+- `npx expo-cli init <project_name>` to generate new react-native project using expo.
+
+## chapter 9
+- three objects for navigation: 
+    - stack navigator - click, go to another screen, back arrow on top left.
+    - bottom tab navigator: tab on bottom to show different screens
+    - drawer navigator- menu on left side.
 
 
 
