@@ -257,11 +257,32 @@ Fill up screen:
     - bottom tab navigator: tab on bottom to show different screens
     - drawer navigator- menu on left side.
 
+- for api calls, you can use: axios, or fetch. 
+  - fetch isa built in function for network requests, error handling is odd, requires more wrapper code
+  - so use axios instead. separate library needs installation, easy to use, increases app size.
 
+- you cannot just make the api call on teh top level of function to set state. If you do, it rerenders the component, calls the search api again, and the loop happens. infinite loop if you do it this way. You can'st just call teh funciton directly in the component like this. REmember updated state causd by the setter causes the component to rerender. 
 
+## Chapter 10
+- `useEffect` is a hook that allows us to call a function one time on render. only when component is first rendered. `useEffect` is a hook. YOu nee to pass a second argument which tells `useEffect` how many times to run the first argument, the function. To only run the first argument, the funciton, one time, pass an empty array as the second argument.
 
+```text
+useEffect(() => {
+  <api call>;
+  },[])
+```
+the aboe makes the api call jsut one time if you put it top level in the component. 
+- we should extract hooks into seaprate files as their own separate business logic.
 
+- when showing images using `Image` component, it's invisible even when provided the uri because it collapses itself without a fixed height and width.
 
+- adding marginLeft to the parent with a child taht scrolls horizontally will cut off the child when it scrolls. If you apply margin left to the child instead, the child can scroll horizontally all the way to the left edge of the screen which is better. This is seen in the react-food app for the images. When you put marginLeft on teh images, they start off shifted to the right, but if you scroll, they will move to the left edge of the screen.
+- how to hide scroll bars: to teh FlatList add `showsHorizontalScrollIndicator: false` to the `FlatList` component.
+- add `ScrollView` to make some element vertically scrollable. You mgiht want to do this with the main display of results.
+- with parent `View` elements, sometimes they expand past hte bottom border with Android,  so you need to constrain the View element.You can use flex : 1. this will tell parent to expand to only visible screen real estate and not past the bottom border.If you feel like you have cut off content or is expanding past screen, use `flex:1`. Why does View expand? React-native just puts as much content in the View as it can, so it expands. If you try to add vertical scrolling with a `ScrollView` it doesn't work on android because there's nothing to scroll. OR you can do this: Instead of using a View to wrap some number of elements because you can only return one element by default, just use `<>` and `</>` as the opening and closing tags. This by default does not allow content to go past the screen like a `View` does.
+- remember that react navigation passes props to the rendered component.it has a navigation prop, and a navigate prop insdie of that. you can pass the key to taht navigate function.Stack navigator passes props to different screens and within it is a navigate function that can change screens that you register with `createStackNavigator`. you can pass the navigate prop to chilren if you need.
+![navigate](notes_images/chapter_11/navigate.jpg) 
+in the above, we pass through the stackNavigator as a prop, which is weird because the intermeiate component doesn't use navigate at all. So it feels weird. What else can you do? You can actually just inject navigation into a component. To do so, we can use `withNavigation` from `react-navigation` which will allow us to desetructure `navigation` from props in this component.
 
 
 
@@ -270,6 +291,7 @@ Fill up screen:
 - FlatList. 
     - props: horizontal, data, renderItem, showsHorizontalScrollIndicator
 - TouchableOpacity - highly customizable component that can detect a press like text or an image.
+  - onPress (you can use this to navigate to another page and have the icon be opaque for a second to give user feedback).
 - Button - shows button and detects a press.
     - props: onPress, title
 - View - used to wrap everything in a return statement in a component. return one single root element.
@@ -277,4 +299,6 @@ Fill up screen:
     - props: source
 - TextInput - for input of text
     - props: autocorrect, autoCApitalize, value, onChangeText
-    
+- Image - for displaying images
+    - props: uri
+    - you need to give it height and width otherwise it collapses itself.
