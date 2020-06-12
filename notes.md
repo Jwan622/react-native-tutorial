@@ -281,11 +281,136 @@ the aboe makes the api call jsut one time if you put it top level in the compone
 - add `ScrollView` to make some element vertically scrollable. You mgiht want to do this with the main display of results.
 - with parent `View` elements, sometimes they expand past hte bottom border with Android,  so you need to constrain the View element.You can use flex : 1. this will tell parent to expand to only visible screen real estate and not past the bottom border.If you feel like you have cut off content or is expanding past screen, use `flex:1`. Why does View expand? React-native just puts as much content in the View as it can, so it expands. If you try to add vertical scrolling with a `ScrollView` it doesn't work on android because there's nothing to scroll. OR you can do this: Instead of using a View to wrap some number of elements because you can only return one element by default, just use `<>` and `</>` as the opening and closing tags. This by default does not allow content to go past the screen like a `View` does.
 - remember that react navigation passes props to the rendered component.it has a navigation prop, and a navigate prop insdie of that. you can pass the key to taht navigate function.Stack navigator passes props to different screens and within it is a navigate function that can change screens that you register with `createStackNavigator`. you can pass the navigate prop to chilren if you need.
-![navigate](notes_images/chapter_11/navigate.jpg) 
+![navigate](notes_images/chapter_12/navigate.png) 
 in the above, we pass through the stackNavigator as a prop, which is weird because the intermeiate component doesn't use navigate at all. So it feels weird. What else can you do? You can actually just inject navigation into a component. To do so, we can use `withNavigation` from `react-navigation` which will allow us to desetructure `navigation` from props in this component.
 
 
+## Chapter 12
+- How will we manage state? We will use a provider:
 
+![provider](notes_images/chapter_12/provider.png)
+- any child cna access the state in provider. This is a good alternative to having all blog posts be in the index and have the index pass them down to other components. No need to pass props anymore. This is global state management like Redux. The provider can send props to any child and callbacks too.
+- context is sort of like props. It's used by the Provider to pass state. Easy to communicate data from parent to super nested child whereas props we have to pass the data down one by one.
+![context](notes_images/chapter_12/context.png) 
+- context can move data from parent to deeply nested child.
+
+```text
+  return <BlogContext.Provider value={5}>
+    {children}
+  </BlogContext.Provider>
+```
+this is how you pass props to chilren using Provider.
+- in short, this is how to set data in the App.js file:
+
+```text
+  return <BlogContext.Provider value={5}>
+    {children}
+  </BlogContext.Provider>
+```
+this is how to get the value in teh child:
+
+```text
+import React, { useContext } from 'react';
+import BlogContext from "../context/BlogContext";
+
+const IndexScreen = () => {
+  const value = useContext(BlogContext);
+  ...
+```
+- remember you cannot render objects in react so if you pass an array of objects or object into value, you get an error.
+- remember you do not manage state with Context, you move state aroun with Context. You still manage state with something like `useState`
+- so you create a Context, set the value on the context provider, export teh context. That's all we do in the provider. then in the child we just import the context, call `useContext` and we get the value.
+- What's the difference between using `useReducer` and `useState` you can differentiate between cases using Reducer that are subtly different instead of writing multiple `useState`. You can do more complicated things using Reducer. can modify state in additional ways using reducer.
+- below is a generic way to create many different contexts, all we need to do is pass in an action that returns a function and uses dispatch and a reducer and initialState.
+```text
+import React, { useReducer } from 'react';
+
+export default (reducer, actions, initialState) => { // we can use this function and now just pass in these 3 variables.
+  const Context = React.createContext();
+
+  const Provider = ({ children }) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    const boundActions = {};
+
+    for (let key in actions) { // we iterate because all teh actions from a context do want to get bound to the same dispatch so the actions get processed by the same reducer.
+      boundActions[key] = actions[key](dispatch); // this loops through all actions that came from the file, and passes dispatch into it, and sets the return function on the boundActions object.
+    }
+
+    return <Context.Provider value={{ state: state, ...boundActions}}>
+      {children}
+    </Context.Provider>
+
+  };
+
+  return { Context, Provider } // this is a reusable Context and Provider.
+}
+```
+the action can look likeethis:
+
+```text
+const addBlogPost = (dispatch) => {
+  return () => {
+    dispatch({ type: 'add_blogpost' }) // dispatch isn't available in this file instead it's in createDataContext so we need to pass it in and then have that return a function closure.
+  }
+}; //function to dispatch an action that modifies our state. the dispatch will be the dispatch that is created by useReducer inside createDataContext
+```
+
+- how do make a show screeen. first navigate to it passing the id:
+```text
+        renderItem={({ item }) => { // item is a blog post object with title and id
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate('Show', {id: item.id})}>
+              <View style={styles.row}>
+                <Text style={styles.title}>{item.title} - {item.id}</Text>
+                <TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
+                  <Feather style={styles.icon} name="trash" />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          )
+        }}
+```
+in the above, the navigate takes a 2nd argument that is an object with the id of the element we want to show.
+- below is how to get the id that is passed to the component from `navigate`
+```text
+  const blogPost = state.find((blogPost) => blogPost.id === navigation.getParam('id'));
+```
+- using the above ,we can use the state obtained fomr useContext to find the appropriate element:
+```text
+import { Context } from "../context/BlogContext"
+
+const ShowScreen = ({ navigation }) => {
+  const { state } = useContext(Context);
+
+  const blogPost = state.find((blogPost) => blogPost.id === navigation.getParam('id'));
+```
+- where do we navigate back to pages? Well, this has a problem:
+```text
+      <Button
+        title="Add Blog Post"
+        onPress={() => {
+          addBlogPost(title, content);
+          navigation.navigate("Index"); // putting the navigate here isn't good because sometimes the addBlogPost might make an async call that may not resolve by the time navigate is called.
+        }}
+      />
+```
+in the above we may not want to navigate back immediately after calling addBlogPost because it may make an async call. We don't want to instantly navigate back. it's too soon. we should instead pass a callback to addBlogPost.
+
+- to set initialValues in a component:
+```text
+BlogPostForm.defaultProps = {
+  initialValues: {
+    title: '',
+    content: '',
+  }
+};
+```
+
+- the navigation object has another function called `pop` which goes back to teh previous screen. pops off current view from teh stack in a sense.
+
+## Chapter 13
+- JSON server is good for front-end developers who need a quick back-end for prototyping and mocking.
 
 ## Components from React Native
 - FlatList. 
